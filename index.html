@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Tree Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="margin: 0">
+    <h1>Binary Tree Visualizer</h1>
+
+    <div>
+        <button onclick="showOptions('bt')">Binary Tree</button>
+        <button onclick="showOptions('bst')">Binary Search Tree</button>
+        <button onclick="showOptions('heap')">Heap</button>
+    </div>
+
+    <div id="input-container" style="display: none;">
+
+        <select id="tree-options" onchange="checkForInorder()">
+            <!-- Options will be according to selected Tree Type -->
+        </select>
+
+        <input type="text" id="inorder-input" placeholder="Enter inorder elements">
+
+        <input type="text" id="main-input" placeholder="Enter array elements">
+        <input type="text" id="separator-input" placeholder="Enter separator" value=" ">            
+        <input type="text" id="null-input" placeholder="Enter null character" value="X">
+
+        <button onclick="generateTree()">Generate</button>
+
+        <button onclick="toggleCustomize()" id="customizeBtn">Show Customization</button>
+
+        <div id="customize-tree-container" style="display: none;">
+
+            <label for="animation-duration">Animation Duration:</label>
+            <input type="range" id="animation-duration" max="2000" min="50" value="400">
+
+            <label for="node-radius-input">Node Size:</label>
+            <input type="range" id="node-radius-input" max="80" min="10" value="30">
+
+            <label for="node-color-input">Node Color:</label>
+            <input type="color" id="node-color-input" value="#ffa116">
+
+            <label for="value-color-input">Value Color:</label>
+            <input type="color" id="value-color-input" value="#ffffff">
+
+        </div>
+    </div>
+
+    <svg id="tree-svg" height="0" width="0">
+        <!-- Tree will be drawn here -->
+    </svg>
+
+    <script src="index.js"></script>
+</body>
+</html>
