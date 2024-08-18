@@ -6,52 +6,102 @@
     <title>Binary Tree Visualizer</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="margin: 0">
-    <h1>Binary Tree Visualizer</h1>
+<body>
+    <div id="wrapper">
+        
+        <div id="header">
+            <h2>Tree operations</h2>
+            <div style="display: flex;">
+                <select id="tree-operation">
+                    <optgroup label="Depth First Search">
+                        <option value="preorder">Preorder Traversal</option>
+                        <option value="inorder">Inorder Traversal</option>
+                        <option value="postorder">Postorder Traversal</option>
+                    </optgroup>
+                    <optgroup label="Breadth First Search">
+                        <option value="levelorder">Level Order Traversal</option>
+                    </optgroup>
+                </select>
+                <input type="text" id="animate-input" placeholder="Value" style="display: none;">
+                <button id="operation-btn">Start</button>
+                <button id="stop-operation-btn" style="display: none;">Stop</button>            
+            </div>
+            
+        </div>
 
-    <div>
-        <button onclick="showOptions('bt')">Binary Tree</button>
-        <button onclick="showOptions('bst')">Binary Search Tree</button>
-        <button onclick="showOptions('heap')">Heap</button>
-    </div>
+        <div id="input-container">
+            <h1>Binary Tree Visualizer</h1>
 
-    <div id="input-container" style="display: none;">
+            <div id="tree-types">
+                <button onclick="showOptions('bt')">Binary Tree</button>
+                <button onclick="showOptions('bst')">Binary Search Tree</button>
+                <button onclick="showOptions('heap')">Heap</button>
+            </div>
 
-        <select id="tree-options" onchange="checkForInorder()">
-            <!-- Options will be according to selected Tree Type -->
-        </select>
+            <div>
+                <h3>Create Tree from Input string</h3>
+                <select id="tree-options">
+                    <option value="leetcode">LeetCode / Levelorder with Null</option>
+                    <option value="geeksforgeeks">GeeksforGeeks / Levelorder with Null</option>
+                    <option value="preorder-null">Preorder with Null</option>
+                </select>
+    
+                <div>
+                    <div id="data-type-container" style="display: none;">
+                        <label for="data-type">Data Type:</label>
+                        <select id="data-type">
+                            <option value="number">Number</option>
+                            <option value="string">Character/String</option>
+                        </select>
+                    </div>
 
-        <input type="text" id="inorder-input" placeholder="Enter inorder elements">
+                    <label for="main-input">Input string:</label>
+                    <input type="text" id="main-input" placeholder="Enter array elements">
 
-        <input type="text" id="main-input" placeholder="Enter array elements">
-        <input type="text" id="separator-input" placeholder="Enter separator" value=" ">            
-        <input type="text" id="null-input" placeholder="Enter null character" value="X">
+                    <label for="separator-input">Separator:</label>
+                    <input type="text" id="separator-input" placeholder="Enter separator" value=",">
+                    
+                    <div id="null-input-container">
+                        <label for="null-input">Null Character:</label>
+                        <input type="text" id="null-input" placeholder="Enter null character" value="null">
+                    </div>
+                    
+                    <button onclick="generateTree()">Generate</button>
+                </div>
+            </div>
 
-        <button onclick="generateTree()">Generate</button>
+            <div>
+                <button id="customize-btn">Show Customization</button>
+                <div id="customize-tree-container" style="display: none;">
+                    <label for="animation-duration">Animation Duration:</label>
+                    <input type="range" id="animation-duration" max="1000" min="300" value="500">
+    
+                    <label for="node-radius-input">Node Size:</label>
+                    <input type="range" id="node-radius-input" max="80" min="10" value="30">
+    
+                    <label for="node-color-input">Node Color:</label>
+                    <input type="color" id="node-color-input" value="#ffffff">
 
-        <button onclick="toggleCustomize()" id="customizeBtn">Show Customization</button>
-
-        <div id="customize-tree-container" style="display: none;">
-
-            <label for="animation-duration">Animation Duration:</label>
-            <input type="range" id="animation-duration" max="2000" min="50" value="400">
-
-            <label for="node-radius-input">Node Size:</label>
-            <input type="range" id="node-radius-input" max="80" min="10" value="30">
-
-            <label for="node-color-input">Node Color:</label>
-            <input type="color" id="node-color-input" value="#ffa116">
-
-            <label for="value-color-input">Value Color:</label>
-            <input type="color" id="value-color-input" value="#ffffff">
+                    <label for="value-color-input">Value Color:</label>
+                    <input type="color" id="value-color-input" value="#000000">
+                </div>
+            </div>
 
         </div>
-    </div>
 
-    <svg id="tree-svg" height="0" width="0">
-        <!-- Tree will be drawn here -->
-    </svg>
+        <div id="tree-container">
+            <svg id="tree-svg" height="0" width="0">
+                <!-- Tree will be drawn here -->
+            </svg>
+        </div>
+    </div>
+    
 
     <script src="index.js"></script>
+    <script src="queue.js"></script>
+    <script src="constructTree.js"></script>
+    <script src="/treeGraphics/main.js"></script>
+    <script src="/treeGraphics/traversalAnimation.js"></script>
+    <script src="/treeGraphics/BSTAnimation.js"></script>
 </body>
 </html>
