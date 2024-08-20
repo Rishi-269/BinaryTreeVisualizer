@@ -1,4 +1,12 @@
-// create tree in memory //variables used root, mapId, nodeMap, input, Queue
+//creates tree and heap in memory form input string 
+
+/*
+index.js
+    variables used root, mapId, maxHeight, nodeMap, heap[]
+
+queue.js
+    Queue
+*/
 
 function createNode(value) {
     const temp = { value, id: mapId, left: null, right: null };
@@ -6,7 +14,7 @@ function createNode(value) {
     return temp;
 }
 
-function levelorderNullTree() {
+function levelorderNullTree(input, nullRep) {
     if (input.length === 0 || input[0] === nullRep)
         return;
 
@@ -36,7 +44,7 @@ function levelorderNullTree() {
 
 }
 
-function preorderNullTree() {
+function preorderNullTree(input, nullRep) {
     if (input.length == 0 || input[0] === nullRep)
         return;
 
@@ -64,7 +72,7 @@ function preorderNullTree() {
     root = preorderNull(0);
 }
 
-function inputSeqTree(){
+function inputSeqTree(input){
     if(input.length == 0)
         return;
     
@@ -93,4 +101,64 @@ function inputSeqTree(){
 
         maxHeight = Math.max(maxHeight, height);
     }
+}
+
+function levelorderNullBST(input, nullRep) {
+    //will return false if input not bst
+
+    if (input.length === 0 || input[0] === nullRep)
+        return true;
+
+    let index = 0;
+    const queue = new Queue();
+    root = createNode(input[index++]);
+    queue.enqueue({
+        node: root,
+        height: 0,
+        max: dataType == "number" ? Infinity : '\uffff',
+        min: dataType == "number" ? -Infinity : '',
+    });
+    maxHeight = 0;
+
+    while (!queue.isEmpty() && index < input.length) {
+        const {node, height, min, max} = queue.dequeue();
+
+        if (input[index] !== nullRep) {
+            if(input[index] >= node.value || input[index] <= min)
+                return false;
+
+            node.left = createNode(input[index]);
+            queue.enqueue({node: node.left, height: height + 1, max : node.value , min});
+            maxHeight = Math.max(maxHeight, height + 1);
+        }
+        index++;
+
+        if (index < input.length && input[index] !== nullRep) {
+            if(input[index] >= max || input[index] <= node.value)
+                return false;
+
+            node.right = createNode(input[index]);
+            queue.enqueue({node: node.right, height: height + 1, max, min : node.value});
+            maxHeight = Math.max(maxHeight, height + 1);
+        }
+        index++;
+    }
+
+    return true;
+}
+
+function leftHeap(index){
+    return 2*index + 1 < heap.length ? 2*index + 1 : null;
+}
+
+function rightHeap(index){
+    return 2*index + 2 < heap.length ? 2*index + 2 : null;
+}
+
+function parentHeap(index){
+    return Math.floor((index - 1)/2) >= 0 ? Math.floor((index - 1)/2) : null;
+}
+
+function buildHeap() {
+    
 }

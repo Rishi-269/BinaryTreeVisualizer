@@ -11,7 +11,7 @@
         
         <div id="header">
             <h2>Tree operations</h2>
-            <div style="display: flex;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
                 <select id="tree-operation">
                     <optgroup label="Depth First Search">
                         <option value="preorder">Preorder Traversal</option>
@@ -23,6 +23,7 @@
                     </optgroup>
                 </select>
                 <input type="text" id="animate-input" placeholder="Value" style="display: none;">
+                <select id="animate-select-input" style="display: none;"></select>
                 <button id="operation-btn">Start</button>
                 <button id="stop-operation-btn" style="display: none;">Stop</button>            
             </div>
@@ -35,11 +36,11 @@
             <div id="tree-types">
                 <button onclick="showOptions('bt')">Binary Tree</button>
                 <button onclick="showOptions('bst')">Binary Search Tree</button>
-                <button onclick="showOptions('heap')">Heap</button>
+                <button onclick="showOptions('hp')">Heap</button>
             </div>
 
             <div>
-                <h3>Create Tree from Input string</h3>
+                <h3>Create from Input string</h3>
                 <select id="tree-options">
                     <option value="leetcode">LeetCode / Levelorder with Null</option>
                     <option value="geeksforgeeks">GeeksforGeeks / Levelorder with Null</option>
@@ -78,12 +79,7 @@
     
                     <label for="node-radius-input">Node Size:</label>
                     <input type="range" id="node-radius-input" max="80" min="10" value="30">
-    
-                    <label for="node-color-input">Node Color:</label>
-                    <input type="color" id="node-color-input" value="#ffffff">
 
-                    <label for="value-color-input">Value Color:</label>
-                    <input type="color" id="value-color-input" value="#000000">
                 </div>
             </div>
 
@@ -100,8 +96,8 @@
     <script src="index.js"></script>
     <script src="queue.js"></script>
     <script src="constructTree.js"></script>
-    <script src="/treeGraphics/main.js"></script>
-    <script src="/treeGraphics/traversalAnimation.js"></script>
-    <script src="/treeGraphics/BSTAnimation.js"></script>
+    <script src="treeGraphics/main.js"></script>
+    <script src="treeGraphics/traversalAnimation.js"></script>
+    <script src="treeGraphics/BSTAnimation.js"></script>
 </body>
 </html>

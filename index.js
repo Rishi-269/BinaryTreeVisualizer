@@ -5,6 +5,7 @@ const dataTypeInput = document.getElementById('data-type');
 const nullInput = document.getElementById('null-input');
 const nullInputContainer = document.getElementById('null-input-container');
 const animateInput = document.getElementById('animate-input');
+const animateSelectInput = document.getElementById('animate-select-input');
 const treeOptions = document.getElementById('tree-options');
 const treeOperation = document.getElementById('tree-operation');
 const treeOperationStop = document.getElementById('stop-operation-btn');
@@ -13,17 +14,17 @@ const treeSvg = document.getElementById('tree-svg');
 const customizeTreeContainer = document.getElementById('customize-tree-container');
 
 //tree input
-var treeType = 'bt';
-var nullRep = 'null';
-var seperator = ',';
+var treeType = "bt";
 var dataType = "number";
 
-//tree in memory
+//tree and bst in memory
 const nodeMap = new Map();
-var input = [];
 var mapId = 0;
 var root = null;
 var maxHeight = -1;
+
+//heap in memory
+const heap = [];
 
 //tree graphics
 const svgNs = "http://www.w3.org/2000/svg";
@@ -35,12 +36,25 @@ var buildAnimation = false;
 var pause = false;
 
 window.addEventListener("resize", () => {
-    if(root != null){
+    if(root !== null)
         displayTree();
-    }
+    else if(heap.length !== null)
+        displayHeap();
 });
 
 function showOptions(type) {
+
+    if(treeType === 'hp'){
+        heap.length = 0;
+        displayHeap();
+    } else{
+        root = null;
+        mapId = 0;
+        nodeMap.clear();
+        maxHeight = -1;
+        displayTree();
+    }
+
     treeType = type;
 
     if (type === 'bt') {
@@ -60,6 +74,7 @@ function showOptions(type) {
             </optgroup>
         `;
         animateInput.style.display = "none";
+        animateSelectInput.style.display = "none";
         dataTypeContainer.style.display = "none";
         nullInputContainer.style.display = "block";
         nullInput.value = 'null';
@@ -69,8 +84,6 @@ function showOptions(type) {
             <option value="leetcode">LeetCode / Levelorder with Null</option>
             <option value="geeksforgeeks">GeeksforGeeks / Levelorder with Null</option>
             <option value="input-sequence">Input Sequence</option>
-            <option value="preorder">Preorder</option>
-            <option value="postorder">Postorder</option>
         `;
         treeOperation.innerHTML = `
             <optgroup label="Binary Search Tree Operations">
@@ -88,11 +101,12 @@ function showOptions(type) {
             </optgroup>
         `;
         animateInput.style.display = "block";
+        animateSelectInput.style.display = "none";
         dataTypeContainer.style.display = "block";
         nullInputContainer.style.display = "block";
         nullInput.value = 'null';
 
-    } else if (type === 'heap') {
+    } else if (type === 'hp') {
         treeOptions.innerHTML = `
             <option value="max-heap">Max Heap</option>
             <option value="min-heap">Min Heap</option>
@@ -103,18 +117,13 @@ function showOptions(type) {
             <option value="extract-heap">Extract Top</option>
         `;
         animateInput.style.display = "none";
+        animateSelectInput.style.display = "none";
         dataTypeContainer.style.display = "block";
         nullInputContainer.style.display = "none";
     }
 
     separatorInput.value = ',';
 
-    root = null;
-    mapId = 0;
-    nodeMap.clear();
-    maxHeight = -1;
-    input.length = 0;
-    displayTree();
 }
 
 treeOptions.addEventListener("change", (e) => {
@@ -138,6 +147,26 @@ treeOperation.addEventListener("change", (e) => {
         animateInput.style.display = "block";
     else
         animateInput.style.display = "none";
+
+    if(root === null && (e.target.value === "insert" || e.target.value === "insert-heap")){
+        animateSelectInput.innerHTML = `
+            <optgroup label="Data Type">
+                <option value="number">Number</option>
+                <option value="string">Character/String</option>
+            </optgroup>
+        `;
+        animateSelectInput.style.display = "block";
+    } else if(e.target.value === "delete"){
+        animateSelectInput.innerHTML = `
+            <optgroup label="Choose Replacement Node for Deletion if it has two children">
+                <option value="predecessor">Inorder Predecessor</option>
+                <option value="successor">Inorder Successor</option>
+            </optgroup>
+        `;
+        animateSelectInput.style.display = "block";
+    } else{
+        animateSelectInput.style.display = "none";
+    }
 })
 
 document.getElementById('operation-btn').addEventListener('click', async (e) => {
@@ -162,11 +191,29 @@ document.getElementById('operation-btn').addEventListener('click', async (e) => 
                 await animateLevelorder();
                 break;
             case "search":
-                await animateSearch(animateInput.value);
+                if(dataType === "number" && isNaN(animateInput.value))
+                    inputError(animateInput, "Not a number");
+                else if(animateInput.value.length > 0)
+                    await animateSearch(animateInput.value);
                 break;
             case "insert":
-                if(await animateInsert(animateInput.value))
-                    displayTree();
+                if (root === null)
+                    dataType = animateSelectInput.value;
+    
+                if(dataType === "number" && isNaN(animateInput.value))
+                    inputError(animateInput, "Not a number");
+                else if(animateInput.value.length > 0){
+                    if(await animateInsert(animateInput.value))
+                        displayTree();
+                    animateSelectInput.style.display = "none";
+                }
+                break;
+            case "delete":
+                if(dataType === "number" && isNaN(animateInput.value))
+                    inputError(animateInput, "Not a number");
+                else if(animateInput.value.length > 0)
+                    if(await animateDelete(animateInput.value, animateSelectInput.value))
+                        displayTree();
                 break;
             default:
                 break;
@@ -216,44 +263,51 @@ function generateTree(){
     maxHeight = -1;
     root = null;
 
-    seperator = separatorInput.value;
-    nullRep = nullInput.value;
     dataType = dataTypeInput.value;
-    input = (mainInput.value.trim().length == 0 ? [] : mainInput.value.trim().split(seperator));
+
+    const nullRep = nullInput.value;
+    const input = (mainInput.value.trim().length == 0 ? [] : mainInput.value.trim().split(separatorInput.value));
 
     switch (treeOptions.value) {
         case "geeksforgeeks":
-            if(treeType === 'bst' && isInputNumber()){
-
+            if(treeType === 'bst'){
+                if(dataType == "number" && !validateNumber(input, nullRep))
+                    inputError(mainInput, "Not Number");
+                else if(!levelorderNullBST(input, nullRep)){
+                    inputError(mainInput, "Not BST");
+                    root = null;
+                    nodeMap.clear();
+                    mapId = 0;
+                    maxHeight = -1;
+                }
             }
-            levelorderNullTree();
+            else
+                levelorderNullTree(input, nullRep);
             break;
         case "leetcode":
-            if(treeType === 'bst')
-                console.log('check bst');
-            levelorderNullTree();
+            if(treeType === 'bst'){
+                if(dataType == "number" && !validateNumber(input, nullRep))
+                    inputError(mainInput, "Not Number");
+                else if(!levelorderNullBST(input, nullRep)){
+                    inputError(mainInput, "Not BST");
+                    root = null;
+                    nodeMap.clear();
+                    mapId = 0;
+                    maxHeight = -1;
+                }
+            }
+            else
+                levelorderNullTree(input, nullRep);
             break;
         case "preorder-null":
-            preorderNullTree();
+            preorderNullTree(input, nullRep);
             break;
         case "input-sequence":
-            if(dataType == "number" && !validateNumber())
-                inputError();
+            if(dataType == "number" && !validateNumber(input))
+                inputError(mainInput, "Not Number");
             else
-                inputSeqTree();
+                inputSeqTree(input);
             break;
-        case "preorder":
-            if(dataType == "number" && !validateNumber())
-                inputError();
-            else
-                preorderTree();
-            break;
-        case "postorder":
-            if(dataType == "number" && !validateNumber())
-                inputError();
-            else
-                postorderTree();
-            break; 
         default:
             break;
     }
@@ -261,13 +315,31 @@ function generateTree(){
     displayTree();
 }
 
-function validateNumber() {
+//input validation and error
+function validateNumber(input, nullRep) {
     for (let i = 0; i < input.length; i++) {
-        if(isNaN(input[i])){
-            input.length = 0;
+        if(nullRep !== undefined && input[i] === nullRep)
+            continue;
+        if(isNaN(input[i]))
             return false;
-        }
         input[i] = Number(input[i]);
     }
     return true;
 }
+
+function inputError(inputElement, message) {
+    const orignalInput = inputElement.value;
+    const originalPlaceholder = inputElement.placeholder;
+
+    inputElement.value = '';
+    inputElement.placeholder = message;
+
+    inputElement.classList.add('input-error');
+
+    setTimeout(() => {
+        inputElement.value = orignalInput;
+        inputElement.placeholder = originalPlaceholder;
+        inputElement.classList.remove('input-error');
+    }, 1000);
+}
+

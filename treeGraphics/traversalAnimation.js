@@ -1,3 +1,14 @@
+/*
+index.js
+    variables -> root
+    setting height,width and to render -> treeSvg, nodeRadius, svgNs
+    animation control -> buildAnimation, pause, animationDuration
+main.js
+    drawNode, drawEdge, setDimensionSVG
+queue.js
+    Queue
+*/
+
 async function animatePreorder() {
     if(root == null)
         return;
