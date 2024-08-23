@@ -107,7 +107,6 @@ function displayHeap() {
 
     const preorder = (curr, x, y, horizontalGap) => {
 
-        console.log(curr);
         drawNode(x, y, heap[curr], curr);
 
         if(leftHeap(curr)){

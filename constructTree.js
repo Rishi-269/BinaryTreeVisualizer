@@ -2,7 +2,7 @@
 
 /*
 index.js
-    variables used root, mapId, maxHeight, nodeMap, heap[]
+    variables used root, mapId, maxHeight, nodeMap, heap[], isMinHeap
 
 queue.js
     Queue
@@ -71,6 +71,8 @@ function preorderNullTree(input, nullRep) {
 
     root = preorderNull(0);
 }
+
+//BST
 
 function inputSeqTree(input){
     if(input.length == 0)
@@ -147,6 +149,22 @@ function levelorderNullBST(input, nullRep) {
     return true;
 }
 
+//heap
+
+function comparatorHeap(i, j) {
+    if (i === null)
+        return false;
+    if(isMinHeap)
+        return heap[i] > heap[j];
+    return heap[i] < heap[j];
+}
+
+function swapHeap(i, j) {
+    const temp = heap[i];
+    heap[i] = heap[j];
+    heap[j] = temp;
+}
+
 function leftHeap(index){
     return 2*index + 1 < heap.length ? 2*index + 1 : null;
 }
@@ -159,6 +177,31 @@ function parentHeap(index){
     return Math.floor((index - 1)/2) >= 0 ? Math.floor((index - 1)/2) : null;
 }
 
-function buildHeap() {
-    
+function buildHeap(input) {
+    if (input.length === 0)
+        return;
+
+    heap.push(...input);
+
+    const heapify = function(index) {
+        while(index < heap.length){
+            let top = index;
+            let left = leftHeap(top);
+            let right = rightHeap(top);
+            if(left < heap.length && comparatorHeap(top, left))
+                top = left;
+            if(right < heap.length && comparatorHeap(top, right))
+                top = right;
+
+            if(top === index)
+                break;
+
+            swapHeap(top, index);
+            index = top;
+        }
+    }
+
+    for (let i = parentHeap(heap.length - 1); i >= 0; i--) 
+        heapify(i);
+
 }

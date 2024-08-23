@@ -54,14 +54,14 @@ async function animateSearch(val) {
 
 async function animateInsert(val) {
 
+    if(dataType === "number")
+        val = Number(val);
+
     if(root === null){
         root = createNode(val);
         maxHeight = 0;
         return true;
     }
-
-    if(dataType === "number")
-        val = Number(val);
 
     let curr = root;
     let maxHeightChanged = false;
@@ -72,7 +72,7 @@ async function animateInsert(val) {
         await new Promise(resolve => setTimeout(resolve, animationDuration));
         while (pause) await new Promise(resolve => setTimeout(resolve, 100));
         if(!buildAnimation)
-            return maxHeightChanged;
+            return false;
 
         if(val === curr.value)
             node.classList.add('found');
@@ -82,7 +82,7 @@ async function animateInsert(val) {
         await new Promise(resolve => setTimeout(resolve, animationDuration));
         while (pause) await new Promise(resolve => setTimeout(resolve, 100));
         if(!buildAnimation)
-            return maxHeightChanged;
+            return false;
 
         if(val === curr.value){
             node.classList.remove('found');

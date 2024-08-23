@@ -25,6 +25,9 @@ var maxHeight = -1;
 
 //heap in memory
 const heap = [];
+var isMinHeap = false;
+const inputHeap = [];
+var isinputMin = false;
 
 //tree graphics
 const svgNs = "http://www.w3.org/2000/svg";
@@ -36,16 +39,17 @@ var buildAnimation = false;
 var pause = false;
 
 window.addEventListener("resize", () => {
-    if(root !== null)
-        displayTree();
-    else if(heap.length !== null)
+    if(treeType === "hp")
         displayHeap();
+    else
+        displayTree();
 });
 
 function showOptions(type) {
 
     if(treeType === 'hp'){
         heap.length = 0;
+        inputHeap.length = 0;
         displayHeap();
     } else{
         root = null;
@@ -112,7 +116,7 @@ function showOptions(type) {
             <option value="min-heap">Min Heap</option>
         `;
         treeOperation.innerHTML = `
-            <option value="build-heap">Build Heap(uses the input array)</option>
+            <option value="build-heap">Build Heap (uses input array from generate)</option>
             <option value="insert-heap">Insert</option>
             <option value="extract-heap">Extract Top</option>
         `;
@@ -148,11 +152,21 @@ treeOperation.addEventListener("change", (e) => {
     else
         animateInput.style.display = "none";
 
-    if(root === null && (e.target.value === "insert" || e.target.value === "insert-heap")){
+    if(root === null && e.target.value === "insert"){
         animateSelectInput.innerHTML = `
             <optgroup label="Data Type">
                 <option value="number">Number</option>
                 <option value="string">Character/String</option>
+            </optgroup>
+        `;
+        animateSelectInput.style.display = "block";
+    } else if(heap.length === 0 && e.target.value === "insert-heap"){
+        animateSelectInput.innerHTML = `
+            <optgroup label="Data Type and Heap Type">
+                <option value="number-max">Number and Max Heap</option>
+                <option value="number-min">Number and Min Heap</option>
+                <option value="string-max">Character/String and Max Heap</option>
+                <option value="string-min">Character/String and Min Heap</option>
             </optgroup>
         `;
         animateSelectInput.style.display = "block";
@@ -215,6 +229,47 @@ document.getElementById('operation-btn').addEventListener('click', async (e) => 
                     if(await animateDelete(animateInput.value, animateSelectInput.value))
                         displayTree();
                 break;
+            case "insert-heap":
+                if (heap.length === 0){
+                    switch (animateSelectInput.value) {
+                        case "number-max":
+                            isMinHeap = false;
+                            dataType = "number";
+                            break;
+                        case "number-min":
+                            isMinHeap = true;
+                            dataType = "number";
+                            break;
+                        case "string-max":
+                            isMinHeap = false;
+                            dataType = "string";
+                            break;
+                        case "string-min":
+                            isMinHeap = true;
+                            dataType = "string";
+                            break;    
+                        default:
+                            break;
+                    }
+                }
+    
+                if(dataType === "number" && isNaN(animateInput.value))
+                    inputError(animateInput, "Not a number");
+                else if(animateInput.value.length > 0){
+                    if(await animateInsertHeap(animateInput.value))
+                        displayHeap();
+                    animateSelectInput.style.display = "none";
+                }
+                break;
+
+            case "extract-heap":
+                if(await animateExtractHeap())
+                    displayHeap();
+                break;
+            
+            case "build-heap":
+                await animateBuildHeap();
+                break;
             default:
                 break;
         }
@@ -234,7 +289,12 @@ document.getElementById('operation-btn').addEventListener('click', async (e) => 
     }
 })
 
-treeOperationStop.addEventListener('click', () => displayTree());
+treeOperationStop.addEventListener('click', () => {
+    if (treeType === 'hp')
+        displayHeap();
+    else
+        displayTree();
+});
 
 document.getElementById('customize-btn').addEventListener("click",(e) => {
     if(e.target.innerText === "Show Customization"){
@@ -250,7 +310,10 @@ document.getElementById('customize-btn').addEventListener("click",(e) => {
 
 document.getElementById('node-radius-input').addEventListener("change", (e) => {
     nodeRadius = Number(e.target.value);
-    displayTree();
+    if (treeType === 'hp')
+        displayHeap();
+    else
+        displayTree();
 })
 
 document.getElementById('animation-duration').addEventListener("change", (e) => {
@@ -258,14 +321,20 @@ document.getElementById('animation-duration').addEventListener("change", (e) => 
 })
 
 function generateTree(){
-    nodeMap.clear(); // clearing map and tree
-    mapId = 0;
-    maxHeight = -1;
-    root = null;
+    if(treeType === 'hp'){
+        heap.length = 0;
+        inputHeap.length = 0;
+    }
+    else{
+        nodeMap.clear(); // clearing map and tree
+        mapId = 0;
+        maxHeight = -1;
+        root = null;
+    }
 
     dataType = dataTypeInput.value;
-
     const nullRep = nullInput.value;
+
     const input = (mainInput.value.trim().length == 0 ? [] : mainInput.value.trim().split(separatorInput.value));
 
     switch (treeOptions.value) {
@@ -308,11 +377,32 @@ function generateTree(){
             else
                 inputSeqTree(input);
             break;
+        case "max-heap":
+            if(dataType == "number" && !validateNumber(input))
+                inputError(mainInput, "Not Number");
+            else{
+                inputHeap.push(...input);
+                isinputMin = isMinHeap = false;
+                buildHeap(input);
+            }
+            break;
+        case "min-heap":
+            if(dataType == "number" && !validateNumber(input))
+                inputError(mainInput, "Not Number");
+            else{
+                inputHeap.push(...input);
+                isinputMin = isMinHeap = true;
+                buildHeap(input);
+            }
+            break;
         default:
             break;
     }
 
-    displayTree();
+    if(treeType === "hp")
+        displayHeap();
+    else
+        displayTree();
 }
 
 //input validation and error

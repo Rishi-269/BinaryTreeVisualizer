@@ -2,18 +2,19 @@
     fill: var(--color5);
     stroke: var(--color4);
     stroke-width: 3;
-    transition: fill 0.5s linear;
+    transition: fill 0.5s linear, cx 0.5s ease-in-out, cy 0.5s ease-in-out;
 }
 
 .val{
     fill: var(--color3);
     text-anchor: middle;
-    transition: fill 0.5s linear;
+    transition: fill 0.5s linear, x 0.3s ease-in-out, y 0.3s ease-in-out;
 }
 
 .edge{
     stroke: var(--color4);
     stroke-width: 3;
+    transition: fill 0.5s linear;
 }
 
 .found{
@@ -24,6 +25,10 @@
     fill: orangered;
 }
 
+.hide{
+    fill: transparent;
+    stroke: transparent;
+}
 
 .node, .edge, .val {
     animation: fadeIn 0.5s ease-in-out;
