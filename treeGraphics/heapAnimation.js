@@ -283,7 +283,7 @@ async function animateBuildHeap(){
     }
     
     function parent(index){
-        return Math.floor((index - 1)/2) >= 0 ? Math.floor((index - 1)/2) : null;
+        return Math.floor((index - 1)/2);
     }
 
     async function heapify (index) {
@@ -369,7 +369,7 @@ async function animateBuildHeap(){
     for (let i = 0; i <= parent(tempHeap.length - 1) ; i++) 
         treeSvg.querySelectorAll(`.N${i}`).forEach((element) => element.classList.add('hide'));
 
-    for (let i = parentHeap(tempHeap.length - 1); i >= 0 ; i--){
+    for (let i = parent(tempHeap.length - 1); i >= 0 ; i--){
         await new Promise(resolve => setTimeout(resolve, animationDuration));
         while (pause) await new Promise(resolve => setTimeout(resolve, 100));
         if(!buildAnimation)
