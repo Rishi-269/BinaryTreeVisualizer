@@ -167,11 +167,33 @@ async function animateDelete(val, replacement) {
 
                 if(edge && rightEdge){
                     const tempEdge = document.createElementNS(svgNs, 'path');
-                    tempEdge.setAttribute('d', `
-                        M ${edge.getAttribute('x1')} ${edge.getAttribute('y1')}
-                        Q ${edge.getAttribute('x2')} ${edge.getAttribute('y2')}
-                        ${rightEdge.getAttribute('x2')} ${rightEdge.getAttribute('y2')}
-                    `)
+                    const start = {x: null, y: null}, mid = {x: null, y: null}, end = {x: null, y: null};
+
+                    if(edge.tagName === 'path'){
+                        const coordinates = edge.getAttribute('d').split(' ');
+                        start.x = coordinates[1];
+                        start.y = coordinates[2];
+
+                        mid.x = coordinates[6];
+                        mid.y = coordinates[7];
+                    } else{
+                        start.x = edge.getAttribute('x1');
+                        start.y = edge.getAttribute('y1');
+
+                        mid.x = edge.getAttribute('x2');
+                        mid.y = edge.getAttribute('y2');
+                    }
+
+                    if(rightEdge.tagName === 'path'){
+                        const coordinates = edge.getAttribute('d').split(' ');
+                        end.x = coordinates[6];
+                        end.y = coordinates[7];
+                    } else{
+                        end.x = rightEdge.getAttribute('x2');
+                        end.y = rightEdge.getAttribute('y2');
+                    }
+
+                    tempEdge.setAttribute('d', `M ${start.x} ${start.y} Q ${mid.x} ${mid.y} ${end.x} ${end.y}`);
                     tempEdge.setAttribute('class', `N${curr.right.id} edge`);
                     tempEdge.setAttribute('fill', 'transparent');
                     treeSvg.insertAdjacentElement('afterbegin', tempEdge);
@@ -192,11 +214,33 @@ async function animateDelete(val, replacement) {
 
                 if(edge){
                     const tempEdge = document.createElementNS(svgNs, 'path');
-                    tempEdge.setAttribute('d', `
-                        M ${edge.getAttribute('x1')} ${edge.getAttribute('y1')}
-                        Q ${edge.getAttribute('x2')} ${edge.getAttribute('y2')}
-                        ${leftEdge.getAttribute('x2')} ${leftEdge.getAttribute('y2')}
-                    `)
+                    const start = {x: null, y: null}, mid = {x: null, y: null}, end = {x: null, y: null};
+
+                    if(edge.tagName === 'path'){
+                        const coordinates = edge.getAttribute('d').split(' ');
+                        start.x = coordinates[1];
+                        start.y = coordinates[2];
+
+                        mid.x = coordinates[6];
+                        mid.y = coordinates[7];
+                    } else{
+                        start.x = edge.getAttribute('x1');
+                        start.y = edge.getAttribute('y1');
+
+                        mid.x = edge.getAttribute('x2');
+                        mid.y = edge.getAttribute('y2');
+                    }
+
+                    if(leftEdge.tagName === 'path'){
+                        const coordinates = edge.getAttribute('d').split(' ');
+                        end.x = coordinates[6];
+                        end.y = coordinates[7];
+                    } else{
+                        end.x = leftEdge.getAttribute('x2');
+                        end.y = leftEdge.getAttribute('y2');
+                    }
+
+                    tempEdge.setAttribute('d', `M ${start.x} ${start.y} Q ${mid.x} ${mid.y} ${end.x} ${end.y}`);
                     tempEdge.setAttribute('class', `N${curr.left.id} edge`);
                     tempEdge.setAttribute('fill', 'transparent');
                     treeSvg.insertAdjacentElement('afterbegin', tempEdge);
