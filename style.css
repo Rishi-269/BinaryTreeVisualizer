@@ -103,6 +103,7 @@ button:hover {
 
 #wrapper {
     display: grid;
+    overflow-x: auto;
     grid-template-rows: minmax(19vh, auto) minmax(80vh, auto);
     grid-template-columns: 22.5vw auto;
     grid-template-areas: 
